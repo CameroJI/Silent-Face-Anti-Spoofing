@@ -28,7 +28,7 @@ def get_default_config():
     conf.batch_size = 1024
 
     # model
-    conf.num_classes = 3
+    conf.num_classes = 2
     conf.input_channel = 3
     conf.embedding_size = 128
 
@@ -44,23 +44,24 @@ def get_default_config():
     conf.board_loss_every = 10
     # save model/iter
     conf.save_every = 30
-
+    conf.input_size = [224, 224]
     return conf
 
 
 def update_config(args, conf):
-    conf.devices = args.devices
-    conf.patch_info = args.patch_info
-    w_input, h_input = get_width_height(args.patch_info)
+    patch_info = "org_1_80x60"
+    # conf.devices = args.devices
+    conf.patch_info = patch_info
+    w_input, h_input = get_width_height(patch_info)
     conf.input_size = [h_input, w_input]
     conf.kernel_size = get_kernel(h_input, w_input)
-    conf.device = "cuda:{}".format(conf.devices[0]) if torch.cuda.is_available() else "cpu"
+    conf.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # resize fourier image size
     conf.ft_height = 2*conf.kernel_size[0]
     conf.ft_width = 2*conf.kernel_size[1]
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
-    job_name = 'Anti_Spoofing_{}'.format(args.patch_info)
+    job_name = 'Anti_Spoofing_{}'.format(patch_info)
     log_path = '{}/{}/{} '.format(conf.log_path, job_name, current_time)
     snapshot_dir = '{}/{}'.format(conf.snapshot_dir_path, job_name)
 

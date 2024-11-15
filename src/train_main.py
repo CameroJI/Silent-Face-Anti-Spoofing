@@ -33,7 +33,7 @@ class TrainMain:
         self.cls_criterion = CrossEntropyLoss()
         self.ft_criterion = MSELoss()
         self.model = self._define_network()
-        self.optimizer = optim.SGD(self.model.module.parameters(),
+        self.optimizer = optim.SGD(self.model.parameters(),
                                    lr=self.conf.lr,
                                    weight_decay=5e-4,
                                    momentum=self.conf.momentum)
@@ -123,7 +123,7 @@ class TrainMain:
             'conv6_kernel': self.conf.kernel_size}
 
         model = MultiFTNet(**param).to(self.conf.device)
-        model = torch.nn.DataParallel(model, self.conf.devices)
+        # model = torch.nn.DataParallel(model, self.conf.devices)
         model.to(self.conf.device)
         return model
 
@@ -140,7 +140,8 @@ class TrainMain:
             ret.append(correct_k.mul_(1. / batch_size))
         return ret
 
-    def _save_state(self, time_stamp, extra=None):
+    def _save_state(self, time_stamp="", extra=None):
         save_path = self.conf.model_path
-        torch.save(self.model.state_dict(), save_path + '/' +
-                   ('{}_{}_model_iter-{}.pth'.format(time_stamp, extra, self.step)))
+        # torch.save(self.model.state_dict(), save_path + '/' +
+        #            ('{}_{}_model_iter-{}.pth'.format(time_stamp, extra, self.step)))
+        torch.save(self.model, 'spoofing_model.pth')
